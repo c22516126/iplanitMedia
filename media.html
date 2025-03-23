@@ -11,25 +11,32 @@
     <div class="container">
         <div class="containerTop">
             <img src="images/pfp.png" alt="profile picture" class="pfp">
-            <button class="navbutton">Messages</button>
-            <button class="navbutton">Media</button>
-            <button class="navbutton">Calendar</button>
+            <button class="navButton">Messages</button>
+            <button class="navButton">Media</button>
+            <button class="navButton">Calendar</button>
         </div>
         <div class="containerBottom">
             <div class="sideButtons">
-                <button class="navbutton">Plan</button>
-                <button class="navbutton">Goals</button>
-                <button class="navbutton">Notes</button>
+                <button class="navButton">Plan</button>
+                <button class="navButton">Goals</button>
+                <button class="navButton">Notes</button>
             </div>
             <div class="mediaBoxes">
                 <div class="selectContainer">
-                    <button class="navbutton">Take Photo</button>
-                    <button class="navbutton">Select Photo</button>
+                    <div class="webcamContainer">
+                        <img class = uploadImg id="uploadImg" src="images/uploadimg.png" alt="select icon">
+                        <input type="file" id="inputPhoto" accept="image/*" style="display: none;">
+                        <video class = uploadVid id="video" autoplay style="display: none;"></video>
+                    </div>
+                    <button class="navButton" id="takePhotoButton">Take Photo</button>
+                    <button id="captureButton" style="display: none;" >Capture</button>
+                    <button class="navButton" id="selectPhoto">Select Photo</button>
                 </div>
             </div>
         </div>
         <div class="footer">
             <img src="images/sjoglogo.png" alt="saint john of god logo" class="sjog">
     </div>
+    <script src="js/script.js"></script>
 </body>
 </html>
