@@ -65,12 +65,14 @@ body, html {
 .media-button { background-color: #e67e22; }
 .calendar-button { background-color: #f1c40f; }
 
+
 /* Side Navigation */
 .side-nav {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: var(--mobile-gap);
     margin-bottom: var(--mobile-gap);
+    width: 100%;
 }
 
 .side-button {
@@ -147,16 +149,12 @@ body, html {
     -webkit-tap-highlight-color: transparent;
 }
 
-@media (min-width: 768px) {
-    .container-fluid {
-        max-width: 800px;
-        margin: 0 auto;
+@media (min-width: 768px) { /* Tablets and larger */
+    .nav-buttons {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns for larger screens */
     }
 }
 
-/* Ensure touch targets are at least 44x44 pixels */
-.nav-button, 
-.side-button, 
 .media-button-gray {
     min-height: 44px;
     min-width: 44px;
