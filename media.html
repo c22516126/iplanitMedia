@@ -2,34 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>iPlanit</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="containerTop">
-            <img src="images/pfp.png" alt="profile picture" class="pfp">
-            <button class="navbutton">Messages</button>
-            <button class="navbutton">Media</button>
-            <button class="navbutton">Calendar</button>
-        </div>
-        <div class="containerBottom">
-            <div class="sideButtons">
-                <button class="navbutton">Plan</button>
-                <button class="navbutton">Goals</button>
-                <button class="navbutton">Notes</button>
+    <div class="container-fluid">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <img src="images\pfp.png" alt="Profile Picture" class="profile-pic">
+            <div class="nav-buttons">
+                <button class="nav-button messages-button">Messages</button>
+                <button class="nav-button media-button">Media</button>
+                <button class="nav-button calendar-button">Calendar</button>
             </div>
-            <div class="mediaBoxes">
-                <div class="selectContainer">
-                    <button class="navbutton">Take Photo</button>
-                    <button class="navbutton">Select Photo</button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Side Navigation -->
+            <div class="side-nav">
+                <button class="side-button plan-button">Plan</button>
+                <button class="side-button goals-button">Goals</button>
+                <button class="side-button notes-button">Notes</button>
+            </div>
+            
+            <!-- Media Content Area -->
+            <div class="content-area">
+                <div class="media-box">
+                    <img src="images\uploadimg.png" alt="Upload Icon" class="upload-icon">
+                    <a href="#galleryModal" class="media-button-gray" data-bs-toggle="modal">Select Photo</a>
+                    <button class="media-button-gray">Take Photo</button>
                 </div>
             </div>
         </div>
-        <div class="footer">
-            <img src="images/sjoglogo.png" alt="saint john of god logo" class="sjog">
+
+        <!-- Image Selection Modal -->
+<div class="modal fade" id="galleryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Choose a Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="gallery">
+                    <img src="images\images (1).jpg" class="gallery-img">
+                    <img src="images\images (2).jpg" class="gallery-img">
+                    <img src="images\images.jpg" class="gallery-img">
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+        
+        <!-- Footer -->
+        <div class="footer">
+            <img src="images\iplanitlogo.png" alt="Iplanit logo">
+            <img src="images\sjoglogo.png" alt="St John of God Logo">
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
