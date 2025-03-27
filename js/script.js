@@ -29,7 +29,7 @@ takePhotoButton.addEventListener('click', async () => {
         stream = await navigator.mediaDevices.getUserMedia({video: true});
         video.srcObject = stream;
     } catch (err) {
-        alert('Error: ', err.message);
+        alert('Camera permission denied');
     }
 }
 );
