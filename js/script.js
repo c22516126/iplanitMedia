@@ -3,9 +3,13 @@ const takePhotoButton = document.getElementById('takePhotoButton');
 const captureButton = document.getElementById('captureButton');
 const video = document.getElementById('video');
 const picture = document.getElementById('uploadImg');
+const confirmButton = document.getElementById('confirmButton');
+const denyButton = document.getElementById('denyButton');
 
+//select photo elements
 const selectPhoto = document.getElementById('selectPhoto');
 const inputPhoto = document.getElementById('inputPhoto');
+
 
 let stream;
 
@@ -49,7 +53,9 @@ captureButton.addEventListener('click', async () => {
     takePhotoButton.style.display = 'block';
     captureButton.style.display = 'none';
 
-    //stop webcma
+    confirmDeny();
+
+    //stop webcam
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
         video.srcObject = null; //clear the video element
@@ -72,9 +78,36 @@ inputPhoto.addEventListener('change', () => {
         picture.src = e.target.result;
         picture.style.display = 'block';
         video.style.display = 'none';
-        captureButton.style.display = 'none';
-        takePhotoButton.style.display = 'block';
+        confirmDeny();
     }
-
     reader.readAsDataURL(file);
 });
+
+//display confirm/deny buttons, hide other buttons
+function confirmDeny() {
+    confirmButton.style.display = 'inline';
+    denyButton.style.display = 'inline';
+    takePhotoButton.style.display = 'none';
+    selectPhoto.style.display = 'none';
+    inputPhoto.style.display = 'none';
+}
+
+confirmButton.addEventListener('click', () => {
+    retake();
+});
+
+denyButton.addEventListener('click', () => {
+    retake();
+});
+
+function retake() {
+    picture.src = 'images/uploadimg.png';
+    picture.style.display = 'block';
+    takePhotoButton.style.display = 'block';
+    selectPhoto.style.display = 'block';
+    captureButton.style.display = 'none';
+    confirmButton.style.display = 'none';
+    denyButton.style.display = 'none';
+    inputPhoto.style.display = 'none';
+    video.style.display = 'none';
+}

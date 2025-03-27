@@ -23,7 +23,7 @@
             </div>
             <div class="mediaBoxes">
                 <div class="selectContainer">
-                    <div class="webcamContainer">
+                    <div id="webcamContainer">
                         <img class = uploadImg id="uploadImg" src="images/uploadimg.png" alt="select icon">
                         <input type="file" id="inputPhoto" accept="image/*" style="display: none;">
                         <video class = uploadVid id="video" autoplay style="display: none;"></video>
@@ -31,6 +31,10 @@
                     <button class="navButton" id="takePhotoButton">Take Photo</button>
                     <button id="captureButton" style="display: none;" >Capture</button>
                     <button class="navButton" id="selectPhoto">Select Photo</button>
+                    <div class="checkContainer">
+                        <button class="checkButton" id="confirmButton" style="display: none;"><img src="images/confirm.png"></button>
+                        <button class="checkButton" id="denyButton" style="display: none;"><img src="images/deny.png"></button>
+                    </div>
                 </div>
             </div>
         </div>
