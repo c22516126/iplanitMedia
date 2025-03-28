@@ -12,6 +12,7 @@ const inputPhoto = document.getElementById('inputPhoto');
 
 
 let stream;
+let imageData = null;
 
 //take photo
 //start webcam
@@ -29,7 +30,7 @@ takePhotoButton.addEventListener('click', async () => {
         stream = await navigator.mediaDevices.getUserMedia({video: true});
         video.srcObject = stream;
     } catch (err) {
-        alert('Camera permission denied');
+        alert('Error: '+ err.message);
     }
 }
 );
@@ -44,10 +45,10 @@ captureButton.addEventListener('click', async () => {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     //convert the canvas to an image
-    const data = canvas.toDataURL('image/png');
+    imageData = canvas.toDataURL('image/png');  
 
     //display the image, hide video
-    picture.src=data;
+    picture.src=imageData;
     picture.style.display = 'block';
     video.style.display = 'none';
     takePhotoButton.style.display = 'block';
@@ -75,7 +76,9 @@ inputPhoto.addEventListener('change', () => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
-        picture.src = e.target.result;
+        imageData = e.target.result; // Store the image data
+        picture.src = imageData;
+        captureButton.style.display = 'none';
         picture.style.display = 'block';
         video.style.display = 'none';
         confirmDeny();
@@ -85,6 +88,8 @@ inputPhoto.addEventListener('change', () => {
 
 //display confirm/deny buttons, hide other buttons
 function confirmDeny() {
+    confirmButton.style.backgroundColor = 'white';
+    denyButton.style.backgroundColor = 'white'; 
     confirmButton.style.display = 'inline';
     denyButton.style.display = 'inline';
     takePhotoButton.style.display = 'none';
@@ -93,6 +98,17 @@ function confirmDeny() {
 }
 
 confirmButton.addEventListener('click', () => {
+    // if image data exists
+    if (imageData) {
+        // Create a new img element for the confirmed photo
+        const newImage = document.createElement('img');
+        newImage.src = imageData;
+        newImage.classList.add('capturedImage'); // Optional: add a class for styling
+
+        // Append the new image to the photo container
+        const photoContainer = document.getElementById('photoContainer');
+        photoContainer.appendChild(newImage);
+    }
     retake();
 });
 
@@ -103,8 +119,8 @@ denyButton.addEventListener('click', () => {
 function retake() {
     picture.src = 'images/uploadimg.png';
     picture.style.display = 'block';
-    takePhotoButton.style.display = 'block';
-    selectPhoto.style.display = 'block';
+    takePhotoButton.style.display = 'flex';
+    selectPhoto.style.display = 'flex';
     captureButton.style.display = 'none';
     confirmButton.style.display = 'none';
     denyButton.style.display = 'none';

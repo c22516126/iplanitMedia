@@ -12,7 +12,6 @@
     flex-direction: column;
     height: 100vh;
     max-height: 100vh;
-    /*border: solid 3px #ffff00;*/
 }
 
 .containerTop {
@@ -69,6 +68,28 @@
     width: 40%;
 }
 
+#photoContainer {
+    display: flex;
+    gap: 10px; /* Adds space between images */
+    flex-wrap: wrap; /* Allows images to wrap to the next line if they exceed the width */
+    border: solid 3px #000000;
+    width: 40%;
+    height: 48vh;
+    max-width: 40%;
+    max-height: 48vh;
+    border-radius: 20px;
+    overflow-y: auto;
+    align-items: flex-start;  /* Aligns items at the top, preventing stretch */
+}
+
+#photoContainer img {
+    width: 230px;  /* Ensures images don't stretch beyond container's width */
+    height: auto; /* Ensures images maintain their aspect ratio */
+    max-height: 100%; /* Ensures the images don't stretch vertically */
+    object-fit: contain; /* Keeps aspect ratio intact */
+}
+
+
 /* Elements */
 
 .sjog {
@@ -103,46 +124,43 @@ button:hover {
     color: white;  
 }
 
+
+
 .selectContainer button {
-    height: 9vh;
-    width: 70%;
-    background-color: rgb(255, 255, 255);  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 18%;
+    background-color: rgb(255, 143, 143);  
     color: rgb(0, 0, 0);  
     border-radius: 20px;
-    border: solid 3px #000000;
+    justify-content: center;
+    
 }
 
 .selectContainer button:hover {
     background-color: rgb(195, 195, 195);  
 }
 
-.checkContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-}
 
-.checkButton {
-    background: none;
-    border: none;
-}
 
 .checkButton img {
+    border-radius: 10px;
     border: none;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
 }
 
+
 .uploadImg {
-    width: 400px;
-    height: 400px;
+    width: 200px;
+    height: 200px;
 }
 
 #webcamContainer {
-    width: 400px;
-    height: 400px;
+    width: 200px;
+    height: 200px;
     border: #000000 solid 3px;
     overflow: hidden;
     flex-shrink: 0;
@@ -153,4 +171,13 @@ button:hover {
     height: 100%;
     object-fit: cover; 
     object-position: center; 
+}
+
+#camIcon {
+    width: 50px;
+    height: 50px;
+}
+
+#takePhotoButton {
+    text-align: center;
 }

@@ -25,17 +25,18 @@
                 <div class="selectContainer">
                     <div id="webcamContainer">
                         <img class = uploadImg id="uploadImg" src="images/uploadimg.png" alt="select icon">
-                        <input type="file" id="inputPhoto" accept="image/*" style="display: none;">
+                        <input type="file" id="inputPhoto" accept="image/*" capture="camera" style="display: none;">
                         <video class = uploadVid id="video" autoplay style="display: none;"></video>
                     </div>
-                    <button class="navButton" id="takePhotoButton">Take Photo</button>
+                    <button class="navButton" id="takePhotoButton"><img id="camIcon" src="images/camera.png">Take Photo</button>
                     <button id="captureButton" style="display: none;" >Capture</button>
                     <button class="navButton" id="selectPhoto">Select Photo</button>
-                    <div class="checkContainer">
-                        <button class="checkButton" id="confirmButton" style="display: none;"><img src="images/confirm.png"></button>
-                        <button class="checkButton" id="denyButton" style="display: none;"><img src="images/deny.png"></button>
-                    </div>
+                    <button class="checkButton" id="confirmButton" style="display: none;"><img src="images/confirm.png"></button>
+                    <button class="checkButton" id="denyButton" style="display: none;"><img src="images/deny.png"></button>
                 </div>
+                <div id = "photoContainer">
+                    <div class="photoBox"></div>
+                    </div>
             </div>
         </div>
         <div class="footer">
