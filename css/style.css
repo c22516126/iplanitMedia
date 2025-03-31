@@ -6,25 +6,21 @@
 }
 
 /* Main containers */
-
 .container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     max-height: 100vh;
-    /*border: solid 3px #ffff00;*/
 }
 
 .containerTop {
-    /*border: solid 3px #ff0000;*/
     display: flex;
     justify-content: space-around;
     align-items: center;
+    padding: 10px 0;
 }
 
-
 .containerBottom {
-    /*border: solid 3px #00ff00;*/
     display: flex;
     justify-self: center;
     align-items: center;
@@ -33,29 +29,28 @@
 }
 
 .footer {
-    /*border: solid 3px #0000ff;*/
     display: flex;
     justify-content: flex-end;
+    padding: 10px;
 }
 
 /* Side containers */
-
 .sideButtons {
-    /*border: solid 3px #0000ff;*/
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     height: 100%;
-
+    padding: 0 20px;
 }
 
 .mediaBoxes {
-    /*border: solid 3px #ff00ff;*/
     display: flex;
     justify-content: space-around;
-    align-items: center;
+    align-items: flex-start;
     height: 100%;
     width: 100%;
+    padding: 20px;
+    gap: 20px;
 }
 
 .selectContainer {
@@ -66,15 +61,59 @@
     justify-content: space-around;
     align-items: center;
     height: 70%;
-    width: 40%;
+    min-width: 40%;
+    padding: 20px;
+}
+
+/* Saved Images Gallery */
+.savedImagesContainer {
+    border: solid 3px #000000;
+    border-radius: 20px;
+    padding: 15px;
+    height: 70%;
+    width: 50%;
+    overflow-y: auto;
+}
+
+.savedImagesContainer h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: rgb(0, 151, 233);
+}
+
+.savedImagesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    padding: 5px;
+}
+
+.savedImageItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.savedImage {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #000000;
+}
+
+.savedImageItem p {
+    font-size: 0.8rem;
+    text-align: center;
+    color: #333;
 }
 
 /* Elements */
-
 .sjog {
     width: 12%;
 }
-
 
 .pfp {
     max-width: 10%;
@@ -85,6 +124,7 @@ button {
     width: 13vw;
     font-size: 1.4rem;
     border-radius: 12px;
+    transition: background-color 0.3s;
 }
 
 button:hover {
@@ -122,20 +162,26 @@ button:hover {
     align-items: center;
     height: 100%;
     width: 100%;
+    gap: 20px;
 }
 
 .checkButton {
     background: none;
     border: none;
+    padding: 0;
 }
 
 .checkButton img {
-    border: none;
     width: 60px;
     height: 60px;
+    transition: transform 0.2s;
 }
 
-.uploadImg {
+.checkButton img:hover {
+    transform: scale(1.1);
+}
+
+.uploadImg, .uploadVid {
     width: 400px;
     height: 400px;
 }
@@ -146,6 +192,10 @@ button:hover {
     border: #000000 solid 3px;
     overflow: hidden;
     flex-shrink: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #webcamContainer > * {
@@ -153,4 +203,23 @@ button:hover {
     height: 100%;
     object-fit: cover; 
     object-position: center; 
+}
+
+/* Scrollbar styling */
+.savedImagesContainer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.savedImagesContainer::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.savedImagesContainer::-webkit-scrollbar-thumb {
+    background: rgb(0, 151, 233);
+    border-radius: 10px;
+}
+
+.savedImagesContainer::-webkit-scrollbar-thumb:hover {
+    background: rgb(0, 120, 200);
 }
