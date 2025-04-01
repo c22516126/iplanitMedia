@@ -1,178 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iPlanit</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iPlanit</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-font: Arial, sans-serif;
+      --mobile-padding: 10px;
+      --mobile-gap: 10px;
+      --mobile-border-radius: 12px;
+    }
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: var(--primary-font);
+      background-color: #f4f4f4;
+      overflow-x: hidden;
+    }
+    .container-fluid {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: var(--mobile-padding);
+      box-sizing: border-box;
+    }
+    .top-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--mobile-gap);
+      margin-bottom: var(--mobile-gap);
+    }
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .nav-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: var(--mobile-gap);
+      width: 100%;
+      margin-bottom: var(--mobile-gap);
+    }
+    .nav-button {
+      padding: 15px;
+      border: none;
+      border-radius: var(--mobile-border-radius);
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+      min-height: 80px;
+      text-align: center;
+    }
+    .messages-button { background-color: #3498db; }
+    .media-button { background-color: #e67e22; }
+    .calendar-button { background-color: #f1c40f; }
+    .plan-button { background-color: #e74c3c; }
+    .goals-button { background-color: #2ecc71; }
+    .notes-button { background-color: #9b59b6; }
+
+    .media-box {
+      width: 100%;
+      max-width: 300px;
+      border: 2px solid black;
+      border-radius: var(--mobile-border-radius);
+      padding: 20px;
+      text-align: center;
+      align-self: center;
+      margin-bottom: var(--mobile-gap);
+    }
+    .upload-icon {
+      width: 60px;
+      margin-bottom: 15px;
+    }
+    .media-button-gray {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background-color: #bdc3c7;
+      border: none;
+      border-radius: var(--mobile-border-radius);
+      color: black;
+      cursor: pointer;
+    }
+
+    .recent-uploads {
+      width: 100%;
+      margin-top: 10px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+    }
+    .recent-uploads h6 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+    .uploaded-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .uploaded-image-wrapper {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .uploaded-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .delete-upload-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: rgba(255, 0, 0, 0.8);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .modal-img {
+      max-width: 100%;
+      max-height: 80vh;
+      display: block;
+      margin: 0 auto;
+      border-radius: 12px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <!-- Top Navigation -->
-        <div class="top-nav">
-            <img src="images\pfp.png" alt="Profile Picture" class="profile-pic">
-            <div class="nav-buttons">
-                <button class="nav-button messages-button">Messages</button>
-                <button class="nav-button media-button">Media</button>
-                <button class="nav-button calendar-button">Calendar</button>
-                <button class="side-button plan-button">Plan</button>
-                <button class="side-button goals-button">Goals</button>
-                <button class="side-button notes-button">Notes</button>
-            </div>
-            
-            <div class="media-box">
-                <img src="images\uploadimg.png" alt="Upload Icon" class="upload-icon">
-                <a href="#galleryModal" class="media-button-gray" data-bs-toggle="modal">Select Photo</a>
-                <button class="media-button-gray" onclick="window.location.href='camera.html'">Take Photo</button>
-            </div>
-
-            <div class="recent-uploads">
-                <h6>Recent Uploads</h6>
-                <div class="uploaded-images" id="uploadedImagesContainer">
-                    <!-- Uploaded images will be dynamically added here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Image Selection Modal -->
-        <div class="modal fade" id="galleryModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Choose a Photo</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="gallery">
-                            <img src="images\images (1).jpg" class="gallery-img" data-image-src="images\images (1).jpg">
-                            <img src="images\images (2).jpg" class="gallery-img" data-image-src="images\images (2).jpg">
-                            <img src="images\images.jpg" class="gallery-img" data-image-src="images\images.jpg">
-                            <img src="images\71un2hI4mcL._AC_UF894,1000_QL80_.jpg" alt="images\71un2hI4mcL._AC_UF894,1000_QL80_.jpg">
-                            <img src="images\147470-ml-1141823.jpg" alt="images\147470-ml-1141823.jpg">
-                            <img src="images\9781400079179.jpg" alt="images\9781400079179.jpg">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Confirmation Modal -->
-        <div class="modal fade" id="confirmUploadModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Upload</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <img id="confirmImage" src="" style="max-width: 100%; margin-bottom: 15px;">
-                        <div class="d-grid gap-2">
-                            <button id="uploadConfirmBtn" class="btn btn-primary">Upload</button>
-                            <button id="cancelUploadBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <img src="images\iplanitlogo.png" alt="Iplanit logo">
-            <img src="images\sjoglogo.png" alt="St John of God Logo">
-        </div>
+  <div class="container-fluid">
+    <div class="top-nav">
+      <img src="images/pfp.png" alt="Profile Picture" class="profile-pic" />
+      <div class="nav-buttons">
+        <button class="nav-button messages-button">Messages</button>
+        <button class="nav-button media-button">Media</button>
+        <button class="nav-button calendar-button">Calendar</button>
+        <button class="nav-button plan-button">Plan</button>
+        <button class="nav-button goals-button">Goals</button>
+        <button class="nav-button notes-button">Notes</button>
+      </div>
+      <div class="media-box">
+        <img src="images/uploadimg.png" alt="Upload Icon" class="upload-icon" />
+        <input type="file" accept="image/*" id="photoInput" style="display: none" />
+        <label for="photoInput" class="media-button-gray">Select/Take Photo</label>
+      </div>
+      <div class="recent-uploads">
+        <h6>Recent Uploads</h6>
+        <div class="uploaded-images" id="uploadedImagesContainer"></div>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Gallery image selection
-            const galleryImages = document.querySelectorAll('.gallery-img');
-            const confirmImage = document.getElementById('confirmImage');
-            const confirmUploadModal = new bootstrap.Modal(document.getElementById('confirmUploadModal'));
-            const uploadConfirmBtn = document.getElementById('uploadConfirmBtn');
+    <div class="modal fade" id="confirmUploadModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Upload</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <img id="confirmImage" src="" class="modal-img" />
+            <div class="d-grid gap-2 mt-3">
+              <button id="uploadConfirmBtn" class="btn btn-primary">Upload</button>
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            galleryImages.forEach(img => {
-                img.addEventListener('click', () => {
-                    const imageSrc = img.getAttribute('data-image-src');
-                    confirmImage.src = imageSrc;
-                    confirmUploadModal.show();
-                });
-            });
+    <div class="modal fade" id="imageViewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content p-3 text-center">
+            <img id="viewedImage" class="modal-img" src="" />
+            <div class="image-view-controls">
+              <button id="backButton" data-bs-dismiss="modal">Back</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const photoInput = document.getElementById("photoInput");
+      const confirmImage = document.getElementById("confirmImage");
+      const uploadConfirmBtn = document.getElementById("uploadConfirmBtn");
+      const confirmModal = new bootstrap.Modal(document.getElementById("confirmUploadModal"));
+      const imageViewModal = new bootstrap.Modal(document.getElementById("imageViewModal"));
+      const viewedImage = document.getElementById("viewedImage");
+      const uploadedImagesContainer = document.getElementById("uploadedImagesContainer");
 
-            uploadConfirmBtn.addEventListener('click', () => {
-                // Store the selected image source in local storage
-                localStorage.setItem('selectedImageSrc', confirmImage.src);
-                
-                // Navigate to upload page
-                window.location.href = 'upload.html';
-            });
+      let uploadedImages = JSON.parse(localStorage.getItem("uploadedImages") || "[]");
 
-            // Check for uploaded images in local storage
-            const uploadedImagesContainer = document.getElementById('uploadedImagesContainer');
-            let uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-    
-            // Function to render uploaded images with delete buttons
-            function renderUploadedImages() {
-                // Clear existing content
-                uploadedImagesContainer.innerHTML = '';
-    
-                // Render images with delete buttons
-                uploadedImages.forEach((imageSrc, index) => {
-                    // Create a container for each image
-                    const imageWrapper = document.createElement('div');
-                    imageWrapper.classList.add('uploaded-image-wrapper');
-    
-                    // Create image element
-                    const imgElement = document.createElement('img');
-                    imgElement.src = imageSrc;
-                    imgElement.classList.add('uploaded-img');
-    
-                    // Create delete button
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.innerHTML = '&times;'; // "×" symbol
-                    deleteBtn.classList.add('delete-upload-btn');
-                    deleteBtn.addEventListener('click', () => {
-                        // Remove the image from the array
-                        uploadedImages.splice(index, 1);
-                        
-                        // Update local storage
-                        localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
-                        
-                        // Re-render images
-                        renderUploadedImages();
-                    });
-    
-                    // Append image and delete button to wrapper
-                    imageWrapper.appendChild(imgElement);
-                    imageWrapper.appendChild(deleteBtn);
-    
-                    // Add to container
-                    uploadedImagesContainer.appendChild(imageWrapper);
-                });
-            }
-    
-            // Function to add a new uploaded image
-            function addUploadedImage(imageSrc) {
-                // Prevent duplicate uploads
-                if (!uploadedImages.includes(imageSrc)) {
-                    uploadedImages.push(imageSrc);
-                    localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
-                    renderUploadedImages();
-                }
-            }
-    
-            // Initial render of uploaded images
+      function renderUploadedImages() {
+        uploadedImagesContainer.innerHTML = '';
+        uploadedImages.forEach((src, index) => {
+          const wrapper = document.createElement("div");
+          wrapper.classList.add("uploaded-image-wrapper");
+
+          const img = document.createElement("img");
+          img.src = src;
+          img.className = "uploaded-img";
+          img.addEventListener("click", () => {
+            viewedImage.src = src;
+            imageViewModal.show();
+          });
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "delete-upload-btn";
+          delBtn.innerHTML = "&times;";
+          delBtn.addEventListener("click", () => {
+            uploadedImages.splice(index, 1);
+            localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
             renderUploadedImages();
-    
-            // Check if there's a newly uploaded image
-            const newUploadedImage = localStorage.getItem('selectedImageSrc');
-            if (newUploadedImage) {
-                addUploadedImage(newUploadedImage);
-                // Clear the selected image src
-                localStorage.removeItem('selectedImageSrc');
-            }
+          });
+
+          wrapper.appendChild(img);
+          wrapper.appendChild(delBtn);
+          uploadedImagesContainer.appendChild(wrapper);
         });
-    </script>
+      }
+
+      renderUploadedImages();
+
+      photoInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = function () {
+            resizeImage(reader.result, 400, 400, (resizedDataUrl) => {
+              confirmImage.src = resizedDataUrl;
+              confirmModal.show();
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      uploadConfirmBtn.addEventListener("click", () => {
+        const imageSrc = confirmImage.src;
+        if (imageSrc && !uploadedImages.includes(imageSrc)) {
+          try {
+            uploadedImages.push(imageSrc);
+            localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
+            renderUploadedImages();
+          } catch (e) {
+            alert("Upload failed. Try a smaller image.");
+            console.error("Storage error:", e);
+          }
+        }
+        confirmModal.hide();
+      });
+
+      function resizeImage(base64, maxW, maxH, callback) {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxW) {
+              height *= maxW / width;
+              width = maxW;
+            }
+          } else {
+            if (height > maxH) {
+              width *= maxH / height;
+              height = maxH;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          callback(canvas.toDataURL("image/jpeg", 0.8));
+        };
+        img.src = base64;
+      }
+    });
+  </script>
 </body>
 </html>
