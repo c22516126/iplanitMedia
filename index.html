@@ -63,7 +63,6 @@
     .plan-button { background-color: #e74c3c; }
     .goals-button { background-color: #2ecc71; }
     .notes-button { background-color: #9b59b6; }
-
     .media-box {
       width: 100%;
       max-width: 300px;
@@ -88,18 +87,17 @@
       color: black;
       cursor: pointer;
     }
-
     .recent-uploads {
       width: 100%;
-      margin-top: 10px;
+      border: 2px solid black !important;
+      border-radius: var(--mobile-border-radius);
+      padding: 20px;
+      text-align: center;
+      margin-bottom: var(--mobile-gap);
       background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 10px;
     }
     .recent-uploads h6 {
-      text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: var(--mobile-gap);
       font-weight: bold;
       color: #333;
     }
@@ -108,8 +106,16 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
+    /* New container to separate the image and its title */
+    .uploaded-image-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* The image wrapper holds only the image with a fixed aspect ratio */
     .uploaded-image-wrapper {
       position: relative;
+      width: 100%;
       aspect-ratio: 1 / 1;
       border-radius: 12px;
       overflow: hidden;
@@ -120,20 +126,14 @@
       object-fit: cover;
       border-radius: 12px;
       cursor: pointer;
+      border: 2px solid black;
     }
-    .delete-upload-btn {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background-color: rgba(255, 0, 0, 0.8);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      font-size: 16px;
-      cursor: pointer;
-      z-index: 2;
+    /* Title styling displayed below the image */
+    .photo-title {
+      font-size: 1rem;
+      color: #333;
+      text-align: center;
+      margin-top: 5px;
     }
     .modal-img {
       max-width: 100%;
@@ -147,7 +147,8 @@
 <body>
   <div class="container-fluid">
     <div class="top-nav">
-      <img src="images/pfp.png" alt="Profile Picture" class="profile-pic" />
+      <img src="images\premium_photo-1689551670902-19b441a6afde.jpg" alt="Profile Picture" class="profile-pic" />
+      <h1>Laura King</h1>
       <div class="nav-buttons">
         <button class="nav-button messages-button">Messages</button>
         <button class="nav-button media-button">Media</button>
@@ -166,7 +167,8 @@
         <div class="uploaded-images" id="uploadedImagesContainer"></div>
       </div>
     </div>
-
+  
+    <!-- Confirm Upload Modal -->
     <div class="modal fade" id="confirmUploadModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -176,70 +178,84 @@
           </div>
           <div class="modal-body text-center">
             <img id="confirmImage" src="" class="modal-img" />
+            <input type="text" id="photoTitle" placeholder="Enter title" class="form-control mt-3" />
             <div class="d-grid gap-2 mt-3">
-              <button id="uploadConfirmBtn" class="btn btn-primary">Upload</button>
+              <button id="uploadConfirmBtn" class="btn btn-success">Upload</button>
               <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-
+  
+    <!-- Image View Modal -->
     <div class="modal fade" id="imageViewModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content p-3 text-center">
-            <img id="viewedImage" class="modal-img" src="" />
-            <div class="image-view-controls">
-              <button id="backButton" data-bs-dismiss="modal">Back</button>
-            </div>
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3 text-center">
+          <img id="viewedImage" class="modal-img" src="" />
+          <div class="image-view-controls">
+            <button id="deleteButton" class="btn btn-danger">Delete</button>
+            <button id="backButton" data-bs-dismiss="modal" class="btn btn-secondary">Back</button>
           </div>
         </div>
       </div>
-      
+    </div>
+  </div>
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const photoInput = document.getElementById("photoInput");
       const confirmImage = document.getElementById("confirmImage");
       const uploadConfirmBtn = document.getElementById("uploadConfirmBtn");
+      const photoTitleInput = document.getElementById("photoTitle");
       const confirmModal = new bootstrap.Modal(document.getElementById("confirmUploadModal"));
       const imageViewModal = new bootstrap.Modal(document.getElementById("imageViewModal"));
       const viewedImage = document.getElementById("viewedImage");
       const uploadedImagesContainer = document.getElementById("uploadedImagesContainer");
-
+      const deleteButton = document.getElementById("deleteButton");
+  
+      // Store each image as an object: { src: ..., title: ... }
       let uploadedImages = JSON.parse(localStorage.getItem("uploadedImages") || "[]");
-
+      let currentImageIndex = null;
+  
       function renderUploadedImages() {
         uploadedImagesContainer.innerHTML = '';
-        uploadedImages.forEach((src, index) => {
+        uploadedImages.forEach((photo, index) => {
+          // Create a container that holds both the image and its title
+          const container = document.createElement("div");
+          container.className = "uploaded-image-container";
+  
+          // Create the wrapper for the image (with fixed aspect ratio)
           const wrapper = document.createElement("div");
-          wrapper.classList.add("uploaded-image-wrapper");
-
+          wrapper.className = "uploaded-image-wrapper";
+  
           const img = document.createElement("img");
-          img.src = src;
+          img.src = photo.src;
           img.className = "uploaded-img";
           img.addEventListener("click", () => {
-            viewedImage.src = src;
+            currentImageIndex = index;
+            viewedImage.src = photo.src;
             imageViewModal.show();
           });
-
-          const delBtn = document.createElement("button");
-          delBtn.className = "delete-upload-btn";
-          delBtn.innerHTML = "&times;";
-          delBtn.addEventListener("click", () => {
-            uploadedImages.splice(index, 1);
-            localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
-            renderUploadedImages();
-          });
-
+  
+          // Append the image to its wrapper
           wrapper.appendChild(img);
-          wrapper.appendChild(delBtn);
-          uploadedImagesContainer.appendChild(wrapper);
+          container.appendChild(wrapper);
+  
+          // Create and append the title below the image
+          const titleEl = document.createElement("p");
+          titleEl.className = "photo-title";
+          titleEl.innerText = photo.title || "Untitled";
+          container.appendChild(titleEl);
+  
+          // Append the complete container to the uploaded images area
+          uploadedImagesContainer.appendChild(container);
         });
       }
-
+  
       renderUploadedImages();
-
+  
       photoInput.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (file && file.type.startsWith("image/")) {
@@ -247,18 +263,23 @@
           reader.onload = function () {
             resizeImage(reader.result, 400, 400, (resizedDataUrl) => {
               confirmImage.src = resizedDataUrl;
+              photoTitleInput.value = ""; // Clear previous title
               confirmModal.show();
             });
           };
           reader.readAsDataURL(file);
         }
       });
-
+  
       uploadConfirmBtn.addEventListener("click", () => {
         const imageSrc = confirmImage.src;
-        if (imageSrc && !uploadedImages.includes(imageSrc)) {
+        const title = photoTitleInput.value.trim();
+        if (imageSrc) {
           try {
-            uploadedImages.push(imageSrc);
+            uploadedImages.push({
+              src: imageSrc,
+              title: title || "Untitled"
+            });
             localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
             renderUploadedImages();
           } catch (e) {
@@ -268,7 +289,16 @@
         }
         confirmModal.hide();
       });
-
+  
+      deleteButton.addEventListener("click", () => {
+        if (currentImageIndex !== null) {
+          uploadedImages.splice(currentImageIndex, 1);
+          localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
+          renderUploadedImages();
+          imageViewModal.hide();
+        }
+      });
+  
       function resizeImage(base64, maxW, maxH, callback) {
         const img = new Image();
         img.onload = () => {
