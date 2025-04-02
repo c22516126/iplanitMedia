@@ -47,11 +47,9 @@
     /*border: solid 3px #6fff00;*/
     display: flex;
     justify-content: space-around;
-    align-items: flex-start;
+    align-items: center;
     height: 100%;
     width: 100%;
-    padding: 20px;
-    gap: 20px;
 }
 
 .selectContainer {
@@ -62,9 +60,9 @@
     justify-content: space-around;
     align-items: center;
     height: 70%;
-    min-width: 40%;
-    padding: 20px;
+    width: 40%;
 }
+
 
 /* Saved Images Gallery */
 .savedImagesContainer {
@@ -145,14 +143,16 @@ button:hover {
 }
 
 .selectContainer button {
-    height: 9vh;
-    width: 70%;
-    background-color: rgb(255, 255, 255);  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 18%;
+    background-color: rgb(255, 143, 143);  
     color: rgb(0, 0, 0);  
     border-radius: 20px;
-    border: solid 3px #000000;
+    justify-content: center;
 }
-
 .selectContainer button:hover {
     background-color: rgb(195, 195, 195);  
 }
@@ -183,20 +183,16 @@ button:hover {
 }
 
 .uploadImg, .uploadVid {
-    width: 400px;
-    height: 400px;
+    width: 200px;
+    height: 200px;
 }
 
 #webcamContainer {
-    width: 400px;
-    height: 400px;
+    width: 200px;
+    height: 200px;
     border: #000000 solid 3px;
     overflow: hidden;
     flex-shrink: 0;
-    background-color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 #webcamContainer > * {
