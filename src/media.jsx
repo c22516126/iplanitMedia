@@ -15,10 +15,16 @@ const setupDB = async () => {
 
 const Media = () => {
   const [showWebcam, setShowWebcam] = useState(false);
-  const [showCaptureButton, setShowCaptureButton] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [savedImages, setSavedImages] = useState([]);
+
+  // Buttons
+  const [showTakePhoto, setShowTakePhoto] = useState(true);
+  const [showSelectPhoto, setShowSelectPhoto] = useState(true);
+  const [showCaptureButton, setShowCaptureButton] = useState(false);
+  
+
   
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -36,6 +42,9 @@ const Media = () => {
   const handleTakePhoto = () => {
     setShowWebcam(true);
     setShowCaptureButton(true);
+    setShowTakePhoto(false);
+    setShowSelectPhoto(false);
+    setShowConfirmation(false);
     setSelectedImage(null);
     
     // Access webcam
@@ -58,6 +67,7 @@ const Media = () => {
     canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
     
     const imageUrl = canvas.toDataURL('image/png');
+    setShowWebcam(false);
     setSelectedImage(imageUrl);
     setShowConfirmation(true);
     setShowCaptureButton(false);
@@ -74,6 +84,7 @@ const Media = () => {
   };
 
   const handleFileChange = (e) => {
+
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -83,6 +94,11 @@ const Media = () => {
       };
       reader.readAsDataURL(file);
     }
+
+    setShowConfirmation(true);
+    setShowTakePhoto(false);
+    setShowSelectPhoto(false);
+
   };
 
   const handleConfirm = async () => {
@@ -107,12 +123,16 @@ const Media = () => {
     setShowConfirmation(false);
     setSelectedImage(null);
     setShowWebcam(false);
+    setShowSelectPhoto(true);
+    setShowTakePhoto(true);
   };
 
   const handleDeny = () => {
+    setShowTakePhoto(true);
     setShowConfirmation(false);
     setSelectedImage(null);
     setShowWebcam(false);
+    setShowSelectPhoto(true);
   };
 
   return (
@@ -134,24 +154,28 @@ const Media = () => {
         <div className="mediaBoxes">
           <div className="selectContainer">
             <div id="webcamContainer">
-              {selectedImage ? (
-                <img src={selectedImage} alt="Captured" className="uploadImg" />
-              ) : (
-                <>
+              {showWebcam ? (
+                <video 
+                  className="uploadVid" 
+                  id="video" 
+                  ref={videoRef} 
+                  autoPlay 
+                  style={{ display: showWebcam ? 'block' : 'none' }}
+                />
+              ) : selectedImage ? (
                   <img 
+                    src={selectedImage} 
+                    alt="Captured" 
+                    className="uploadImg" 
+                  /> 
+                ) : (
+                  <img
                     className="uploadImg" 
                     id="uploadImg" 
                     src="images/uploadimg.png" 
                     alt="select icon" 
                   />
-                  <video 
-                    className="uploadVid" 
-                    id="video" 
-                    ref={videoRef} 
-                    autoPlay 
-                    style={{ display: showWebcam ? 'block' : 'none' }}
-                  />
-                </>
+    
               )}
               
               <input 
@@ -164,9 +188,12 @@ const Media = () => {
               />
             </div>
             
-            <button className="navButton" id="takePhotoButton" onClick={handleTakePhoto}>
-              Take Photo
-            </button>
+            {showTakePhoto && (
+              <button className="navButton" id="takePhotoButton" onClick={handleTakePhoto}>
+                Take Photo
+              </button>
+            )}
+
             
             {showCaptureButton && (
               <button id="captureButton" onClick={handleCapture}>
@@ -174,9 +201,12 @@ const Media = () => {
               </button>
             )}
             
-            <button className="navButton" id="selectPhoto" onClick={handleSelectPhoto}>
-              Select Photo
-            </button>
+            {showSelectPhoto && (
+              <button className="navButton" id="selectPhoto" onClick={handleSelectPhoto}>
+                Select Photo
+              </button>
+            )}
+
             
             {showConfirmation && (
               <div className="checkContainer">
