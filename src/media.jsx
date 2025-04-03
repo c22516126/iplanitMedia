@@ -23,9 +23,11 @@ const Media = () => {
   const [showTakePhoto, setShowTakePhoto] = useState(true);
   const [showSelectPhoto, setShowSelectPhoto] = useState(true);
   const [showCaptureButton, setShowCaptureButton] = useState(false);
-  
 
-  
+  // Expanded images
+  const [expandedImage, setExpandedImage] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -230,6 +232,10 @@ const Media = () => {
                     src={image.imageData} 
                     alt={`Saved ${image.id}`} 
                     className="savedImage"
+                    onClick={() => {
+                      setExpandedImage(image);
+                      setShowImageModal(true);
+                    }}
                   />
                   <p>{new Date(image.createdAt).toLocaleString()}</p>
                 </div>
@@ -238,6 +244,26 @@ const Media = () => {
           </div>
         </div>
       </div>
+
+      {showImageModal && expandedImage && (
+      <div className="imageModalOverlay" onClick={() => setShowImageModal(false)}>
+        <div className="imageModalContent" onClick={(e) => e.stopPropagation()}>
+          <img src={expandedImage.imageData} alt="Expanded" className="imageModalImg" />
+          <p className="imageModalDate">{new Date(expandedImage.createdAt).toLocaleString()}</p>
+          <button className="deleteButton" onClick={async () => {
+            const db = await setupDB();
+            await db.delete('images', expandedImage.id);
+            const images = await db.getAll('images');
+            setSavedImages(images);
+            setShowImageModal(false);
+          }}>
+            Delete
+          </button>
+          <button onClick={() => setShowImageModal(false)}>Back</button>
+        </div>
+      </div>
+    )}
+
       
       <div className="footer">
         <img src="images/sjoglogo.png" alt="saint john of god logo" className="sjog" />
