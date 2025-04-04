@@ -146,7 +146,18 @@ const Media = () => {
     setSelectedImage(null);
     setShowWebcam(false);
   };
-  
+
+  const handleDeleteImage = async (id) => {
+    try {
+      await dbOperations.deleteImage(id);
+      const images = await dbOperations.getAllImages();
+      setSavedImages(images);
+      setShowImageModal(false);
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
+
   return (
     <div className="media-component">
       <div className="media-content-wrapper">
@@ -172,27 +183,32 @@ const Media = () => {
           </div>
 
           <div className="media-buttons">
-            <button className="navButton" onClick={handleTakePhoto}>
-              Take Photo
-            </button>
+            {!showConfirmation && (
+              <>
+                <button className="navButton" onClick={handleTakePhoto}>
+                  Take Photo
+                </button>
+                
+                <div className="file-input-wrapper">
+                  <button className="navButton" onClick={handleSelectPhoto}>
+                    Select Photo
+                  </button>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef}
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+              </>
+            )}
             
             {showCaptureButton && (
               <button className="navButton" id="captureButton" onClick={handleCapture}>
                 Capture
               </button>
             )}
-            
-            <div className="file-input-wrapper">
-              <button className="navButton">
-                Select Photo
-              </button>
-              <input 
-                type="file" 
-                ref={fileInputRef}
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-            </div>
             
             {showConfirmation && (
               <div className="checkContainer">
@@ -228,7 +244,21 @@ const Media = () => {
         </div>
       </div>
 
-      {/* Modal remains the same */}
+      {showImageModal && expandedImage && (
+        <div className="imageModalOverlay" onClick={() => setShowImageModal(false)}>
+          <div className="imageModalContent" onClick={(e) => e.stopPropagation()}>
+            <img src={expandedImage.imageData} alt="Expanded" className="imageModalImg" />
+            <p className="imageModalDate">{new Date(expandedImage.createdAt).toLocaleString()}</p>
+            <button 
+              className="deleteButton" 
+              onClick={() => handleDeleteImage(expandedImage.id)}
+            >
+              Delete
+            </button>
+            <button onClick={() => setShowImageModal(false)}>Back</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
