@@ -36,9 +36,15 @@ const Media = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [savedImages, setSavedImages] = useState([]);
+
+  // Buttons
   const [showCaptureButton, setShowCaptureButton] = useState(false);
-  const [expandedImage, setExpandedImage] = useState(null);
+  const [showSelectPhoto, setShowSelectPhoto] = useState(true);
+  const [showTakePhoto, setShowTakePhoto] = useState(true);
+
+  // Expanded images
   const [showImageModal, setShowImageModal] = useState(false);
+  const [expandedImage, setExpandedImage] = useState(null);
 
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -67,6 +73,9 @@ const Media = () => {
   const handleTakePhoto = () => {
     setShowWebcam(true);
     setShowCaptureButton(true);
+    setShowTakePhoto(false);
+    setShowSelectPhoto(false);
+    setShowConfirmation(false);
     setSelectedImage(null);
     
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -120,6 +129,10 @@ const Media = () => {
       };
       reader.readAsDataURL(file);
     }
+
+    setShowConfirmation(true);
+    setShowTakePhoto(false);
+    setShowSelectPhoto(false);
   };
 
   const handleConfirm = async () => {
@@ -139,76 +152,90 @@ const Media = () => {
     setShowConfirmation(false);
     setSelectedImage(null);
     setShowWebcam(false);
+    setShowSelectPhoto(true);
+    setShowTakePhoto(true);
   };
 
   const handleDeny = () => {
+    setShowTakePhoto(true);
     setShowConfirmation(false);
     setSelectedImage(null);
     setShowWebcam(false);
+    setShowSelectPhoto(true);
   };
-
-  const handleDeleteImage = async (id) => {
-    try {
-      await dbOperations.deleteImage(id);
-      const images = await dbOperations.getAllImages();
-      setSavedImages(images);
-      setShowImageModal(false);
-    } catch (error) {
-      console.error("Error deleting image:", error);
-    }
-  };
-
+  
   return (
     <div className="media-component">
       <div className="media-content-wrapper">
         <div className="selectContainer">
           <div id="webcamContainer">
-            {selectedImage ? (
-              <img src={selectedImage} alt="Captured" className="uploadImg" />
+            {showWebcam && !selectedImage ? (
+              // Display webcam
+              <video 
+                className="uploadVid" 
+                id="video" 
+                ref={videoRef} 
+                autoPlay 
+                style={{ display: showWebcam ? 'block' : 'none' }}
+              />
             ) : (
-              <>
+              // Display captured image 
+              selectedImage ? (
+                <img 
+                  src={selectedImage} 
+                  alt="Captured" 
+                  className="uploadImg" 
+                />
+              ) : (
+                // Display placeholder image 
                 <img
                   className="uploadImg" 
-                  src="/images/uploadimg.png" 
+                  id="uploadImg" 
+                  src="images/uploadimg.png" 
                   alt="select icon" 
                 />
-                <video 
-                  className="uploadVid" 
-                  ref={videoRef} 
-                  autoPlay 
-                  style={{ display: showWebcam ? 'block' : 'none' }}
-                />
-              </>
+              )
             )}
+            
+            <input 
+              type="file" 
+              id="inputPhoto" 
+              ref={fileInputRef}
+              accept="image/*" 
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
           </div>
 
           <div className="media-buttons">
-            {!showConfirmation && (
-              <>
-                <button className="navButton" onClick={handleTakePhoto}>
-                  Take Photo
-                </button>
-                
-                <div className="file-input-wrapper">
-                  <button className="navButton" onClick={handleSelectPhoto}>
-                    Select Photo
-                  </button>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef}
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                  />
-                </div>
-              </>
+
+            {showTakePhoto && (
+              <button className="navButton" onClick={handleTakePhoto}>
+                Take Photo
+              </button>
             )}
-            
+
             {showCaptureButton && (
               <button className="navButton" id="captureButton" onClick={handleCapture}>
                 Capture
               </button>
             )}
+            
+            <div className="file-input-wrapper">
+              
+              {showSelectPhoto && (
+                <button className="navButton" id="selectPhoto" onClick={handleSelectPhoto}>
+                  Select Photo
+                </button>
+              )}
+
+              <input 
+                type="file" 
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </div>
             
             {showConfirmation && (
               <div className="checkContainer">
@@ -245,20 +272,25 @@ const Media = () => {
       </div>
 
       {showImageModal && expandedImage && (
-        <div className="imageModalOverlay" onClick={() => setShowImageModal(false)}>
-          <div className="imageModalContent" onClick={(e) => e.stopPropagation()}>
-            <img src={expandedImage.imageData} alt="Expanded" className="imageModalImg" />
-            <p className="imageModalDate">{new Date(expandedImage.createdAt).toLocaleString()}</p>
-            <button 
-              className="deleteButton" 
-              onClick={() => handleDeleteImage(expandedImage.id)}
-            >
-              Delete
-            </button>
-            <button onClick={() => setShowImageModal(false)}>Back</button>
-          </div>
+      <div className="imageModalOverlay" onClick={() => setShowImageModal(false)}>
+        <div className="imageModalContent" onClick={(e) => e.stopPropagation()}>
+          <img src={expandedImage.imageData} alt="Expanded" className="imageModalImg" />
+          <p className="imageModalDate">{new Date(expandedImage.createdAt).toLocaleString()}</p>
+          <button className="deleteButton" onClick={async () => {
+            const db = await setupDB();
+            await db.delete('images', expandedImage.id);
+            const images = await db.getAll('images');
+            setSavedImages(images);
+            setShowImageModal(false);
+          }}>
+            Delete
+          </button>
+          <button className="backButton" onClick={() => setShowImageModal(false)}>Back</button>
         </div>
-      )}
+      </div>
+    )}
+
+      {/* Modal remains the same */}
     </div>
   );
 };
