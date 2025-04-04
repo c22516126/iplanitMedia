@@ -353,6 +353,8 @@ button, input {
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 15px;
   padding: 5px;
+  overflow: auto;
+  max-height: 420px;
 }
 
 .savedImageItem {
