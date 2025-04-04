@@ -646,3 +646,18 @@ button, input {
     min-height: auto;
   }
 }
+
+#takePhotoButton {
+  padding: 1rem;   
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;  
+}
+
+#takePhotoButton img {
+  height: 35px;  
+  width: auto;
+  object-fit: contain;
+  margin-right: 10px; 
+}

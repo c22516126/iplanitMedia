@@ -210,8 +210,8 @@ const Media = () => {
           <div className="media-buttons">
 
             {showTakePhoto && (
-              <button className="navButton" onClick={handleTakePhoto}>
-                Take Photo
+              <button className="navButton" id="takePhotoButton" onClick={handleTakePhoto}>
+                <img src="images/cam2.png"/> Take Photo
               </button>
             )}
 
