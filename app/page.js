@@ -47,13 +47,16 @@ export default function Home() {
       </div>
 
       <div className="container">
-        <ProfileArea onEditProfile={() => setShowProfileDialog(true)} profilePic={profilePic} name={name} />
+  <div className="profile-column">
+  <ProfileArea onEditProfile={() => setShowProfileDialog(true)} profilePic={profilePic} name={name} />
+    <NavBar fontSize={fontSize} last3={true} />
+  </div>
 
-        <NavBar fontSize={fontSize} first3={true} />
-        <NavBar fontSize={fontSize} last3={true} />
-        
-        <Dashboard />
-      </div>
+  <div className="content-column">
+    <NavBar fontSize={fontSize} first3={true} />
+    <Dashboard />
+  </div>
+</div>
 
       {/* Dialogs */}
       <LogoutDialog showDialog={showLogoutDialog} setShowDialog={setShowLogoutDialog} />
