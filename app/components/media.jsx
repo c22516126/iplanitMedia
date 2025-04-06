@@ -276,10 +276,28 @@ const Media = () => {
                   }}
                 />
               ) : file.fileType?.startsWith('audio/') ? (
-                <audio controls className="savedAudio">
-                  <source src={file.fileData || file.imageData} type={file.fileType} />
-                  Your browser does not support the audio element.
-                </audio>
+                <div className="audioBox">
+                  <button
+                    className="playButton"
+                    onClick={() => {
+                      const audio = document.getElementById(`audio-${file.id}`);
+                      if (audio.paused) {
+                        audio.play();
+                      } else {
+                        audio.pause();
+                      }
+                    }}
+                  >
+                    ▶️
+                  </button>
+                  <audio
+                    id={`audio-${file.id}`}
+                    src={file.fileData || file.imageData}
+                    type={file.fileType}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+
               ) : (
                 <p>Unsupported file type</p>
               )}
