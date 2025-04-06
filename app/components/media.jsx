@@ -34,8 +34,9 @@ const dbOperations = {
 const Media = () => {
   const [showWebcam, setShowWebcam] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [savedImages, setSavedImages] = useState([]);
+  const [selectedFileType, setSelectedFileType] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [savedFiles, setSavedFiles] = useState([]);
 
   // Buttons
   const [showCaptureButton, setShowCaptureButton] = useState(false);
@@ -44,7 +45,7 @@ const Media = () => {
 
   // Expanded images
   const [showImageModal, setShowImageModal] = useState(false);
-  const [expandedImage, setExpandedImage] = useState(null);
+  const [expandedFile, setExpandedFile] = useState(null);
 
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -54,7 +55,7 @@ const Media = () => {
     const loadImages = async () => {
       try {
         const images = await dbOperations.getAllImages();
-        setSavedImages(images);
+        setSavedFiles(images);
       } catch (error) {
         console.error("Error loading images:", error);
       }
@@ -76,7 +77,7 @@ const Media = () => {
     setShowTakePhoto(false);
     setShowSelectPhoto(false);
     setShowConfirmation(false);
-    setSelectedImage(null);
+    setSelectedFile(null);
     
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true })
@@ -104,7 +105,8 @@ const Media = () => {
     canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
     
     const imageUrl = canvas.toDataURL('image/png');
-    setSelectedImage(imageUrl);
+    setSelectedFileType('image/png'); 
+    setSelectedFile(imageUrl);
     setShowConfirmation(true);
     setShowCaptureButton(false);
     
@@ -121,45 +123,53 @@ const Media = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (file && (file.type.startsWith('image/') || file.type.startsWith('audio/'))) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setSelectedImage(event.target.result);
+        setSelectedFile(event.target.result);
+        setSelectedFileType(file.type);  // ✅ this line ensures correct typing
         setShowConfirmation(true);
       };
       reader.readAsDataURL(file);
+    } else {
+      alert("Invalid file");
     }
-
+  
     setShowConfirmation(true);
     setShowTakePhoto(false);
     setShowSelectPhoto(false);
   };
-
+  
   const handleConfirm = async () => {
-    if (selectedImage) {
-      try {
-        await dbOperations.addImage({
-          imageData: selectedImage
-        });
-        
-        const images = await dbOperations.getAllImages();
-        setSavedImages(images);
-      } catch (error) {
-        console.error("Error saving image:", error);
-      }
+    if (!selectedFile || !selectedFileType) {
+      alert("File or file type missing. Please try again.");
+      return;
     }
-    
+  
+    try {
+      await dbOperations.addImage({
+        imageData: selectedFile,
+        fileType: selectedFileType
+      });
+  
+      const files = await dbOperations.getAllImages();
+      setSavedFiles(files);
+    } catch (error) {
+      console.error("Error saving file:", error);
+    }
+  
     setShowConfirmation(false);
-    setSelectedImage(null);
+    setSelectedFile(null);
     setShowWebcam(false);
     setShowSelectPhoto(true);
     setShowTakePhoto(true);
   };
+  
 
   const handleDeny = () => {
     setShowTakePhoto(true);
     setShowConfirmation(false);
-    setSelectedImage(null);
+    setSelectedFile(null);
     setShowWebcam(false);
     setShowSelectPhoto(true);
   };
@@ -169,7 +179,7 @@ const Media = () => {
       <div className="media-content-wrapper">
         <div className="selectContainer">
           <div id="webcamContainer">
-            {showWebcam && !selectedImage ? (
+            {showWebcam && !selectedFile ? (
               // Display webcam
               <video 
                 className="uploadVid" 
@@ -180,9 +190,9 @@ const Media = () => {
               />
             ) : (
               // Display captured image 
-              selectedImage ? (
+              selectedFile ? (
                 <img 
-                  src={selectedImage} 
+                  src={selectedFile} 
                   alt="Captured" 
                   className="uploadImg" 
                 />
@@ -201,7 +211,7 @@ const Media = () => {
               type="file" 
               id="inputPhoto" 
               ref={fileInputRef}
-              accept="image/*" 
+              accept="image/*,audio/*" 
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
@@ -225,7 +235,7 @@ const Media = () => {
               
               {showSelectPhoto && (
                 <button className="navButton" id="selectPhoto" onClick={handleSelectPhoto}>
-                  Select Photo
+                  Select File
                 </button>
               )}
 
@@ -253,42 +263,77 @@ const Media = () => {
         <div className="savedImagesContainer">
           <h3>Saved Images</h3>
           <div className="savedImagesGrid">
-            {savedImages.map((image) => (
-              <div key={image.id} className="savedImageItem">
+          {savedFiles.map((file) => (
+            <div key={file.id} className="savedImageItem">
+              {file.fileType?.startsWith('image/') ? (
                 <img 
-                  src={image.imageData} 
-                  alt={`Saved ${image.id}`} 
+                  src={file.fileData || file.imageData} 
+                  alt={`Saved ${file.id}`} 
                   className="savedImage"
                   onClick={() => {
-                    setExpandedImage(image);
+                    setExpandedFile(file);
                     setShowImageModal(true);
                   }}
                 />
-                <p>{new Date(image.createdAt).toLocaleString()}</p>
-              </div>
-            ))}
+              ) : file.fileType?.startsWith('audio/') ? (
+                <audio controls className="savedAudio">
+                  <source src={file.fileData || file.imageData} type={file.fileType} />
+                  Your browser does not support the audio element.
+                </audio>
+              ) : (
+                <p>Unsupported file type</p>
+              )}
+              <p>{file.createdAt ? new Date(file.createdAt).toLocaleString() : 'Unknown date'}</p>
+            </div>
+          ))}
           </div>
         </div>
       </div>
 
-      {showImageModal && expandedImage && (
-      <div className="imageModalOverlay" onClick={() => setShowImageModal(false)}>
-        <div className="imageModalContent" onClick={(e) => e.stopPropagation()}>
-          <img src={expandedImage.imageData} alt="Expanded" className="imageModalImg" />
-          <p className="imageModalDate">{new Date(expandedImage.createdAt).toLocaleString()}</p>
-          <button className="deleteButton" onClick={async () => {
-            const db = await setupDB();
-            await db.delete('images', expandedImage.id);
-            const images = await db.getAll('images');
-            setSavedImages(images);
-            setShowImageModal(false);
-          }}>
-            Delete
-          </button>
-          <button className="backButton" onClick={() => setShowImageModal(false)}>Back</button>
+      {showImageModal && expandedFile && (
+        <div className="imageModalOverlay" onClick={() => setShowImageModal(false)}>
+          <div className="imageModalContent" onClick={(e) => e.stopPropagation()}>
+            {expandedFile?.fileType?.startsWith('image/') ? (
+              <img
+                src={expandedFile.fileData || expandedFile.imageData}
+                alt="Expanded"
+                className="imageModalImg"
+              />
+            ) : expandedFile?.fileType?.startsWith('audio/') ? (
+              <audio controls className="modalAudioPlayer">
+                <source
+                  src={expandedFile.fileData || expandedFile.imageData}
+                  type={expandedFile.fileType}
+                />
+                Your browser does not support the audio element.
+              </audio>
+            ) : (
+              <p>Unsupported file type</p>
+            )}
+            <p className="imageModalDate">
+              {new Date(expandedFile.createdAt).toLocaleString()}
+            </p>
+            <button
+              className="deleteButton"
+              onClick={async () => {
+                await dbOperations.deleteImage(expandedFile.id);
+                const files = await dbOperations.getAllImages();
+                setSavedFiles(files);
+                setShowImageModal(false);
+              }}
+            >
+              Delete
+            </button>
+            <button
+              className="backButton"
+              onClick={() => setShowImageModal(false)}
+            >
+              Back
+            </button>
+          </div>
         </div>
-      </div>
-    )}
+      )}
+
 
       {/* Modal remains the same */}
     </div>

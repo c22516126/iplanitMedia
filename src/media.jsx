@@ -30,6 +30,7 @@ const Media = () => {
 
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [selectedFileType, setSelectedFileType] = useState(null);
 
   // Load saved images on component mount
   useEffect(() => {
@@ -89,12 +90,20 @@ const Media = () => {
 
     const file = e.target.files[0];
     if (file) {
+
       const reader = new FileReader();
       reader.onload = (event) => {
-        setSelectedImage(event.target.result);
+        const result = event.target.result;
+        // For audio files
+        const isAudio = file.type.startsWith('audio/'); 
+        setSelectedImage(result);
+        setSelectedFileType(file.type); 
         setShowConfirmation(true);
       };
-      reader.readAsDataURL(file);
+
+      if (file.type.startsWith('audio/') || file.type.startsWith('image/')) {
+        reader.readAsDataURL(file);
+      }
     }
 
     setShowConfirmation(true);
@@ -106,19 +115,14 @@ const Media = () => {
   const handleConfirm = async () => {
     if (selectedImage) {
       try {
-        const db = await setupDB();
-        await db.add('images', {
-          imageData: selectedImage,
-          createdAt: new Date()
-        });
-        
+        await dbOperations.addImage(selectedImage, selectedFileType);
+
         // Refresh the saved images list
-        const images = await db.getAll('images');
+        const images = await dbOperations.getAllImages();
         setSavedImages(images);
-        
-        console.log("Image saved to database");
+        console.log("File saved to database");
       } catch (error) {
-        console.error("Error saving image:", error);
+        console.error("Error saving file:", error);
       }
     }
     
@@ -184,7 +188,7 @@ const Media = () => {
                 type="file" 
                 id="inputPhoto" 
                 ref={fileInputRef}
-                accept="image/*" 
+                accept="image/*,audio/*" 
                 style={{ display: 'none' }}
                 onChange={handleFileChange}
               />
@@ -205,7 +209,7 @@ const Media = () => {
             
             {showSelectPhoto && (
               <button className="navButton" id="selectPhoto" onClick={handleSelectPhoto}>
-                Select Photo
+                Select File
               </button>
             )}
 
@@ -228,15 +232,22 @@ const Media = () => {
             <div className="savedImagesGrid">
               {savedImages.map((image) => (
                 <div key={image.id} className="savedImageItem">
-                  <img 
-                    src={image.imageData} 
-                    alt={`Saved ${image.id}`} 
-                    className="savedImage"
-                    onClick={() => {
-                      setExpandedImage(image);
-                      setShowImageModal(true);
-                    }}
-                  />
+                  {image.fileType.startsWith('image/') ? (
+                    <img 
+                      src={image.fileData} 
+                      alt={`Saved ${image.id}`} 
+                      className="savedImage"
+                      onClick={() => {
+                        setExpandedImage(image);
+                        setShowImageModal(true);
+                      }}
+                    />
+                    ) : image.fileType.startsWith('audio/') ? (
+                      <audio controls className="savedAudio">
+                        <source src={image.fileData} type={image.fileType} />
+                        Your browser does not support the audio element.
+                      </audio>
+                    ) : null}
                   <p>{new Date(image.createdAt).toLocaleString()}</p>
                 </div>
               ))}
@@ -248,7 +259,14 @@ const Media = () => {
       {showImageModal && expandedImage && (
       <div className="imageModalOverlay" onClick={() => setShowImageModal(false)}>
         <div className="imageModalContent" onClick={(e) => e.stopPropagation()}>
-          <img src={expandedImage.imageData} alt="Expanded" className="imageModalImg" />
+        {expandedImage.fileType.startsWith('image/') ? (
+          <img src={expandedImage.fileData} alt="Expanded" className="imageModalImg" />
+            ) : expandedImage.fileType.startsWith('audio/') ? (
+              <audio controls className="modalAudioPlayer">
+                <source src={expandedImage.fileData} type={expandedImage.fileType} />
+                Your browser does not support the audio element.
+              </audio>
+            ) : null}
           <p className="imageModalDate">{new Date(expandedImage.createdAt).toLocaleString()}</p>
           <button className="deleteButton" onClick={async () => {
             const db = await setupDB();
