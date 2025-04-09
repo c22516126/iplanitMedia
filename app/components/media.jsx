@@ -18,6 +18,7 @@ const dbOperations = {
     const db = await setupDB();
     return db.getAll('images');
   },
+
   addImage: async (image) => {
     const db = await setupDB();
     return db.add('images', {
@@ -25,6 +26,7 @@ const dbOperations = {
       createdAt: new Date()
     });
   },
+  
   deleteImage: async (id) => {
     const db = await setupDB();
     return db.delete('images', id);
@@ -85,7 +87,7 @@ const Media = () => {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
             videoRef.current.style.display = 'block';
-          }
+          } 
         })
         .catch(error => {
           console.error("Error accessing webcam:", error);
@@ -122,12 +124,14 @@ const Media = () => {
   };
 
   const handleFileChange = (e) => {
+
+    // Read file
     const file = e.target.files[0];
     if (file && (file.type.startsWith('image/') || file.type.startsWith('audio/'))) {
       const reader = new FileReader();
       reader.onload = (event) => {
         setSelectedFile(event.target.result);
-        setSelectedFileType(file.type);  // ✅ this line ensures correct typing
+        setSelectedFileType(file.type);  
         setShowConfirmation(true);
       };
       reader.readAsDataURL(file);
@@ -146,7 +150,7 @@ const Media = () => {
       return;
     }
   
-    try {
+    try { // Store into IndexedDB
       await dbOperations.addImage({
         imageData: selectedFile,
         fileType: selectedFileType
@@ -263,8 +267,9 @@ const Media = () => {
         <div className="savedImagesContainer">
           <h3>Saved Images</h3>
           <div className="savedImagesGrid">
-          {savedFiles.map((file) => (
-            <div key={file.id} className="savedImageItem">
+          {savedFiles.map((file) => ( // Loop through and display saved 
+            //c Create image container
+            <div key={file.id} className="savedImageItem"> 
               {file.fileType?.startsWith('image/') ? (
                 <img 
                   src={file.fileData || file.imageData} 
@@ -276,26 +281,11 @@ const Media = () => {
                   }}
                 />
               ) : file.fileType?.startsWith('audio/') ? (
-                <div className="audioBox">
-                  <button
-                    className="playButton"
-                    onClick={() => {
-                      const audio = document.getElementById(`audio-${file.id}`);
-                      if (audio.paused) {
-                        audio.play();
-                      } else {
-                        audio.pause();
-                      }
-                    }}
-                  >
-                    ▶️
-                  </button>
-                  <audio
-                    id={`audio-${file.id}`}
-                    src={file.fileData || file.imageData}
-                    type={file.fileType}
-                    style={{ display: 'none' }}
-                  />
+                <div className="audioBox" onClick={() => {
+                  setExpandedFile(file);
+                  setShowImageModal(true);
+                }}>
+                  <img src="images/playWhite.png" alt="Play audio button" className="audioIcon" />
                 </div>
 
               ) : (
