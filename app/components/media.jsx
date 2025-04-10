@@ -138,7 +138,10 @@ const Media = () => {
     } else {
       alert("Invalid file");
     }
-  
+
+    // Reset file input
+    e.target.value = null;
+
     setShowConfirmation(true);
     setShowTakePhoto(false);
     setShowSelectPhoto(false);
@@ -167,6 +170,7 @@ const Media = () => {
     setShowWebcam(false);
     setShowSelectPhoto(true);
     setShowTakePhoto(true);
+    setSelectedFileType(null);
   };
   
 
@@ -176,6 +180,7 @@ const Media = () => {
     setSelectedFile(null);
     setShowWebcam(false);
     setShowSelectPhoto(true);
+    setSelectedFileType(null);
   };
   
   return (
@@ -194,20 +199,27 @@ const Media = () => {
               />
             ) : (
               // Display captured image 
-              selectedFile ? (
+              selectedFile && selectedFileType?.startsWith("image/") ? (
                 <img 
                   src={selectedFile} 
                   alt="Captured" 
                   className="uploadImg" 
                 />
+              ) : selectedFileType?.startsWith("audio/") ? (
+                // Display audio placeholder image
+                <img
+                  className="uploadImg" 
+                  id="uploadImg" 
+                  src="images/audioPlaceholder.png" 
+                  alt="select icon" 
+                />
               ) : (
-                // Display placeholder image 
+                // Display default image placeholder
                 <img
                   className="uploadImg" 
                   id="uploadImg" 
                   src="images/uploadimg.png" 
-                  alt="select icon" 
-                />
+                  alt="select icon"/>
               )
             )}
             
@@ -246,7 +258,7 @@ const Media = () => {
               <input 
                 type="file" 
                 ref={fileInputRef}
-                accept="image/*"
+                accept="image/*,audio/*"
                 onChange={handleFileChange}
               />
             </div>
