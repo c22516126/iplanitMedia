@@ -709,3 +709,26 @@ button, input {
   height: auto;
   margin-left: 10%;
 }
+
+/* Titles */
+
+.titleInput {
+  margin: 10px auto;
+  display: block;
+  padding: 8px;
+  font-size: 1rem;
+  width: 80%;
+}
+
+.saveTitleButton {
+  margin: 0 auto 10px auto;
+  display: block;
+  padding: 6px 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.fileTitle {
+  overflow-wrap: break-word;
+  max-width: 100%;
+}

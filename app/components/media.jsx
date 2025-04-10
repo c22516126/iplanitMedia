@@ -30,7 +30,18 @@ const dbOperations = {
   deleteImage: async (id) => {
     const db = await setupDB();
     return db.delete('images', id);
-  }
+  },
+
+  updateImage: async(id, updates) =>{
+      const db = await setupDB();
+      const tx = db.transaction('images', 'readwrite');
+      const store = tx.objectStore('images');
+      const current = await store.get(id);
+      await store.put({ ...current, ...updates });
+      return tx.done;
+    }
+  
+  
 };
 
 const Media = () => {
@@ -39,6 +50,8 @@ const Media = () => {
   const [selectedFileType, setSelectedFileType] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [savedFiles, setSavedFiles] = useState([]);
+  const [editedTitle, setEditedTitle] = useState('');
+
 
   // Check if mobile device, does not cover every phone but works for most
   const isMobile = /Android|iPhone|iPad|Tablet|Nokia/i.test(navigator.userAgent);
@@ -173,7 +186,8 @@ const Media = () => {
     try { // Store into IndexedDB
       await dbOperations.addImage({
         imageData: selectedFile,
-        fileType: selectedFileType
+        fileType: selectedFileType,
+        title: editedTitle.trim() || 'Untitled', // Save as untitled if empty, trim if only spaces
       });
   
       const files = await dbOperations.getAllImages();
@@ -188,6 +202,7 @@ const Media = () => {
     setShowSelectPhoto(true);
     setShowTakePhoto(true);
     setSelectedFileType(null);
+    setEditedTitle(''); 
   };
   
 
@@ -281,13 +296,26 @@ const Media = () => {
             </div>
             
             {showConfirmation && (
-              <div className="checkContainer">
-                <button className="checkButton" onClick={handleConfirm}>
-                  <img src="/images/confirm.png" alt="Confirm" />
-                </button>
-                <button className="checkButton" onClick={handleDeny}>
-                  <img src="/images/deny.png" alt="Deny" />
-                </button>
+              <div className="confirmaBox">
+
+                <input
+                  type='text'
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  placeholder='Enter title'
+                  maxLength={40} // 18 Max character limit
+                  className='titleInput'
+
+                />
+
+                <div className="checkContainer">
+                  <button className="checkButton" onClick={handleConfirm}>
+                    <img src="/images/confirm.png" alt="Confirm" />
+                  </button>
+                  <button className="checkButton" onClick={handleDeny}>
+                    <img src="/images/deny.png" alt="Deny" />
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -320,7 +348,7 @@ const Media = () => {
               ) : (
                 <p>Unsupported file type</p>
               )}
-              <p>{file.createdAt ? new Date(file.createdAt).toLocaleString() : 'Unknown date'}</p>
+              <p className="fileTitle">{file.title}</p>
             </div>
           ))}
           </div>
@@ -330,6 +358,30 @@ const Media = () => {
       {showImageModal && expandedFile && (
         <div className="imageModalOverlay" onClick={() => setShowImageModal(false)}>
           <div className="imageModalContent" onClick={(e) => e.stopPropagation()}>
+
+            <form //Title 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                await dbOperations.updateImage(expandedFile.id, { title: editedTitle });
+                const files = await dbOperations.getAllImages();
+                setSavedFiles(files);
+                setExpandedFile({ ...expandedFile, title: editedTitle });
+              }}
+            >
+              <input
+                  type='text'
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  placeholder="Edit title"
+                  maxLength={40} // 18 Max character limit
+                  className="titleInput"
+                />
+
+                <button type='submit' className="saveTitleButton">
+                  Save title
+                </button>
+              </form>
+
             {expandedFile?.fileType?.startsWith('image/') ? (
               <img
                 src={expandedFile.fileData || expandedFile.imageData}
@@ -347,6 +399,9 @@ const Media = () => {
             ) : (
               <p>Unsupported file type</p>
             )}
+
+            
+
             <p className="imageModalDate">
               {new Date(expandedFile.createdAt).toLocaleString()}
             </p>
