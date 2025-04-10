@@ -40,6 +40,9 @@ const Media = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [savedFiles, setSavedFiles] = useState([]);
 
+  // Check if mobile device, does not cover every phone but works for most
+  const isMobile = /Android|iPhone|iPad|Tablet|Nokia/i.test(navigator.userAgent);
+
   // Buttons
   const [showCaptureButton, setShowCaptureButton] = useState(false);
   const [showSelectPhoto, setShowSelectPhoto] = useState(true);
@@ -74,29 +77,43 @@ const Media = () => {
   }, []);
 
   const handleTakePhoto = () => {
-    setShowWebcam(true);
-    setShowCaptureButton(true);
-    setShowTakePhoto(false);
-    setShowSelectPhoto(false);
-    setShowConfirmation(false);
-    setSelectedFile(null);
-    
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.style.display = 'block';
-          } 
-        })
-        .catch(error => {
-          console.error("Error accessing webcam:", error);
-          alert("Could not access webcam. Please check permissions.");
-          setShowWebcam(false);
-          setShowCaptureButton(false);
-        });
-    } else {
-      alert("Webcam access is not supported in your browser.");
+
+    // Open camera if on mobile
+    if (isMobile) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.capture = 'user';
+      input.onchange = handleFileChange;
+      input.click();
+    }
+
+    // Open webcam if on desktop
+    else {
+      setShowWebcam(true);
+      setShowCaptureButton(true);
+      setShowTakePhoto(false);
+      setShowSelectPhoto(false);
+      setShowConfirmation(false);
+      setSelectedFile(null);
+      
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(stream => {
+            if (videoRef.current) {
+              videoRef.current.srcObject = stream;
+              videoRef.current.style.display = 'block';
+            } 
+          })
+          .catch(error => {
+            console.error("Error accessing webcam:", error);
+            alert("Could not access webcam. Please check permissions.");
+            setShowWebcam(false);
+            setShowCaptureButton(false);
+          });
+      } else {
+        alert("Webcam access is not supported in your browser.");
+      }
     }
   };
 
@@ -224,10 +241,10 @@ const Media = () => {
             )}
             
             <input 
-              type="file" 
               id="inputPhoto" 
+              type="file" 
               ref={fileInputRef}
-              accept="image/*,audio/*" 
+              accept="image/*"
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
