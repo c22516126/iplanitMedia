@@ -20,6 +20,9 @@ html, body {
   max-width: 100vw;
   overflow-x: hidden;
   font-size: 16px;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -36,6 +39,11 @@ body {
   margin: 0;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -48,13 +56,15 @@ button, input {
 /* Top Bar */
 .top-bar {
   background-color: var(--primary-blue);
-  padding: 1.5rem calc(1rem + ((100vw - var(--container-width)) / 2));
-  position: fixed;
+  padding: 1.5rem;
+  position: grid;
   top: 0;
   left: 0;
   width: 100%;
+  height: var(--header-height);
   z-index: 1000;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   color: white;
   font-size: 1.5rem;
@@ -77,13 +87,15 @@ button, input {
 
 /* Main Container */
 .container {
-  display: grid;
-  grid-template-columns: 1fr 3fr;
-  max-width: 90%;
-  align-self: center;
-  justify-self: center;
-  width: 90%;
-  gap: 2rem;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  /* Push all content below the fixed header */
+  margin-top: var(--header-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .profile-column {
@@ -111,8 +123,8 @@ button, input {
 }
 
 .profile-circle > img {
-  width: 6rem;
-  height: 6rem;
+  width: 10rem;
+  height: 10rem;
   border-radius: 50%;
   border: 3px solid var(--grey-outline);
 }
@@ -133,7 +145,7 @@ button, input {
   min-width: 0;
   align-self: center;
   font-weight: 500;
-  font-size: min(2.5rem, 50px);
+  font-size: min(2rem, 50px);
 }
 
 .profile-area-name p {
@@ -156,10 +168,12 @@ button, input {
 
 /* Navigation */
 .navbar {
-  margin: 2rem 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .navbar.single-col {
@@ -172,14 +186,15 @@ button, input {
 }
 
 .nav-btn {
-  padding: 0.7rem 1rem;
+  padding: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
   border-radius: var(--border-radius);
   color: white;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .nav-btn img {
@@ -667,7 +682,6 @@ button, input {
   object-fit: contain;
   margin-right: 10px; 
 }
-
 .audioBox {
   display: flex;
   align-items: center;
