@@ -322,7 +322,7 @@ const Media = () => {
         </div>
 
         <div className="savedImagesContainer">
-          <h3>Saved Images</h3>
+          <h3>Saved Media</h3>
           <div className="savedImagesGrid">
           {savedFiles.map((file) => ( // Loop through and display saved 
             //c Create image container
@@ -334,6 +334,7 @@ const Media = () => {
                   className="savedImage"
                   onClick={() => {
                     setExpandedFile(file);
+                    setEditedTitle('');
                     setShowImageModal(true);
                   }}
                 />
@@ -366,18 +367,22 @@ const Media = () => {
                 const files = await dbOperations.getAllImages();
                 setSavedFiles(files);
                 setExpandedFile({ ...expandedFile, title: editedTitle });
-              }}
+
+                // Close file
+                setShowImageModal(false);  
+                setExpandedFile(null);  
+              }} 
+              className="titleForm"
             >
               <input
                   type='text'
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
-                  placeholder="Edit title"
+                  placeholder={expandedFile.title || 'Enter title'}
                   maxLength={40} // 18 Max character limit
-                  className="titleInput"
+                  className="editTitleInput"
                 />
-
-                <button type='submit' className="saveTitleButton">
+                <button type='submit' className="saveEditButton">
                   Save title
                 </button>
               </form>

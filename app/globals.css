@@ -712,12 +712,17 @@ button, input {
 
 /* Titles */
 
+
 .titleInput {
-  margin: 10px auto;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  justify-content: center;
   padding: 8px;
   font-size: 1rem;
-  width: 80%;
+  border-radius: 4px;
+  width: 100%;
 }
 
 .saveTitleButton {
@@ -726,6 +731,35 @@ button, input {
   padding: 6px 12px;
   font-weight: bold;
   cursor: pointer;
+}
+
+.titleForm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.editTitleInput {
+  flex: 1;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid black;
+  border-radius: 4px;
+}
+
+.saveEditButton {
+  padding: 8px 14px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #efefef;
+  color: black;
+  border: 1px solid black;
+  border-radius: 4px;
+  white-space: nowrap;
 }
 
 .fileTitle {
